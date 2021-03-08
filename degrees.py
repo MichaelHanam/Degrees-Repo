@@ -91,17 +91,39 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    path = [source]
-    for i in range(2):
-        for item in neighbors_for_person(source):
-            if item == target:
-                path.append(item)
-                return path
-            #elif shortest_path(item,target)
-    print("Couldn't Connect Them.")
+    final_path = []
+    list_for_source = list(neighbors_for_person(source))
+    list_for_target = list(neighbors_for_person(target))
+
+    final_path.append(connection(source,target))
+    return final_path
     return None
     # TODO
     raise NotImplementedError
+
+
+def connection(source, target):
+    path = []
+    list_for_source = list(neighbors_for_person(source))
+    list_for_target = list(neighbors_for_person(target))
+    for i in list_for_source:
+        for j in range(len(list_for_target)):
+            if source == target:
+                print(path)
+                return path
+            print(i,j)
+            if i[0] in j:
+                path.append(j)
+                path.append(connection(j,target))
+                return path
+            
+    return path
+    # for item in neighbors_for_person(source):
+    #     for i in range(2)
+    #         if item[i] == target:
+    #             path.append(item[i])
+            
+
 
 
 def person_id_for_name(name):
@@ -141,7 +163,6 @@ def neighbors_for_person(person_id):
         for person_id in movies[movie_id]["stars"]:
             neighbors.add((movie_id, person_id))
     return neighbors
-
 
 if __name__ == "__main__":
     main()
