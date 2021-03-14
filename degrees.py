@@ -91,39 +91,111 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    final_path = []
-    list_for_source = list(neighbors_for_person(source))
-    list_for_target = list(neighbors_for_person(target))
+    source_neighbors = list(neighbors_for_person(source))
+    item_index = -1
+    for item in source_neighbors:
+        
+        # index which item number it is
+        item_index += 1
 
-    final_path.append(connection(source,target))
-    return final_path
-    return None
+        # returns target if they're one of the source's neighbors
+        if target in item:
+            return item
+
+        # if the neighbor only has the same neighbors as source, erase them from the list
+        if sorted(list(neighbors_for_person(item[1]))) == source_neighbors:
+            source_neighbors.pop(item_index)
+        
+        # returns full path to target if they're a neighbor of one of the source's neighbors
+        elif target in list(neighbors_for_person(item[1])):
+            return list(item, (item[0], target))
+
+        # gather all the source's neighbors' neighbors who aren't mutual to the source, for next check to be done by connection() 
+        options = []
+        for next_option in list(neighbors_for_person(item[1])):
+            if not next_option in source_neighbors:
+                options.append(next_option)
+        # and add them in a list as values, whose key is the source's neighbor.
+        source_neighbors.append(options)
+        
+
+
+    final_connection = connection(source, target, source_neighbors)
+    print(type(final_connection))
+    return final_connection
     # TODO
     raise NotImplementedError
 
 
-def connection(source, target):
-    path = []
-    list_for_source = list(neighbors_for_person(source))
-    list_for_target = list(neighbors_for_person(target))
-    for i in list_for_source:
-        for j in range(len(list_for_target)):
-            if source == target:
-                print(path)
-                return path
-            print(i,j)
-            if i[0] in j:
-                path.append(j)
-                path.append(connection(j,target))
-                return path
-            
-    return path
-    # for item in neighbors_for_person(source):
-    #     for i in range(2)
-    #         if item[i] == target:
-    #             path.append(item[i])
-            
+def connection(source, target, paths):
 
+
+    """
+    # important 
+    + make sure there's something to follow all the steps to the target as they're checked.
+    + add the if-return for when the target is found
+    + jic return none after the for
+    - make sure to not add paths that lead to a person that's already in any of the existing paths!
+    """
+
+    
+    paths_checked = set()
+    exists = False
+    path_index = -1
+
+
+    while paths_checked != neighbors_for_person(source):
+        for path in paths:
+            print("Looking at", path) # Debug
+            path_index += 1
+
+            for next_step in list(neighbors_for_person(path[-1][1])):
+                if next_step not in paths_checked:
+                    path[-1].append(next_step)
+                    paths_checked.add(next_step)
+
+
+    for path in paths:
+        if target in path:
+            return path
+
+
+    print("Returned None")
+    return None
+    
+    # for path in current_paths:
+    #     print("Looking at", path)
+    #     path_index += 1
+
+    #     for next_step in list(neighbors_for_person(path[-1][1])):
+    #         for path_check in current_paths:
+    #             if next_step in path_check:
+    #                 exists = True
+
+    #         if not exists:
+    #             current_paths[path_index].append(next_step)
+    #             print("Added", next_step, "To", current_paths[path_index])
+    #         exists = False
+
+
+    # for target_check in current_paths:
+    #     if target in target_check:
+    #         print("Returned",target_check)
+    #         return list(target_check)
+        #[[(1,100),(2,200)],[(1,100),(3,300)]]
+        
+    # for neighbor, options in current_paths.items():
+    #     for item in options:
+    #         for next_option in list(neighbors_for_person(item[1])):
+    #             if not next_option in current_paths:
+    #                 for steps in source_neighbors.values():
+    #                     if next_option in steps:
+    #                         exists = True
+    #             if not exists:
+    #                 options.append(next_option)
+    #             exists = False
+    #         source_neighbors[neighbor] = options
+    
 
 
 def person_id_for_name(name):
