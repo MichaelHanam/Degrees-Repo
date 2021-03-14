@@ -100,7 +100,8 @@ def shortest_path(source, target):
 
         # returns target if they're one of the source's neighbors
         if target in item:
-            return item
+            print("Returned:", [item])
+            return [item]
 
         # if the neighbor only has the same neighbors as source, erase them from the list
         if sorted(list(neighbors_for_person(item[1]))) == source_neighbors:
@@ -108,19 +109,14 @@ def shortest_path(source, target):
         
         # returns full path to target if they're a neighbor of one of the source's neighbors
         elif target in list(neighbors_for_person(item[1])):
+            print("Returned:", list(item, (item[0], target)))
             return list(item, (item[0], target))
 
-        # gather all the source's neighbors' neighbors who aren't mutual to the source, for next check to be done by connection() 
-        options = []
-        for next_option in list(neighbors_for_person(item[1])):
-            if not next_option in source_neighbors:
-                options.append(next_option)
-        # and add them in a list as values, whose key is the source's neighbor.
-        source_neighbors.append(options)
-        
+    source_neighbors_paths = []
+    for path in source_neighbors:
+        source_neighbors_paths.append([(path)])
 
-
-    final_connection = connection(source, target, source_neighbors)
+    final_connection = connection(source, target, source_neighbors_paths)
     print(type(final_connection))
     return final_connection
     # TODO
@@ -138,26 +134,29 @@ def connection(source, target, paths):
     - make sure to not add paths that lead to a person that's already in any of the existing paths!
     """
 
-    
+
     paths_checked = set()
     exists = False
     path_index = -1
 
 
-    while paths_checked != neighbors_for_person(source):
+    while sorted(paths_checked) != set(sorted(neighbors_for_person(source))):
         for path in paths:
-            print("Looking at", path) # Debug
+            #print(path[-1][1])
+            #print("Paths checked:", paths_checked) # Debug
+            #print("Paths:", paths) # Debug
             path_index += 1
 
             for next_step in list(neighbors_for_person(path[-1][1])):
-                if next_step not in paths_checked:
-                    path[-1].append(next_step)
+                if not next_step in paths_checked:
+                    #print(next_step, "Not Checked")
+                    path += tuple(next_step)
+                    print("Added:", next_step)
                     paths_checked.add(next_step)
-
-
-    for path in paths:
-        if target in path:
-            return path
+            if target in path:
+                print("Returned:", path)
+                return path
+        
 
 
     print("Returned None")
