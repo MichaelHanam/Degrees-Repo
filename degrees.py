@@ -1,5 +1,6 @@
 import csv
 import sys
+import copy
 
 from util import Node, StackFrontier, QueueFrontier
 
@@ -59,8 +60,7 @@ def main():
 
     # Load data from files into memory
     print("Loading data...")
-    #load_data(directory)
-    load_data("small")
+    load_data(directory)
     print("Data loaded.")
 
     source = person_id_for_name(input("Name: "))
@@ -95,34 +95,12 @@ def shortest_path(source, target):
     source_neighbors_paths = []
     source_neighbors = list(neighbors_for_person(source))
     item_index = -1
+
     for path in source_neighbors:
+
         source_neighbors_paths.append([(path)])
+
     return connection(source, target, source_neighbors_paths)
-    for item in source_neighbors:
-        
-        # index which item number it is
-        item_index += 1
-
-        # returns target if they're one of the source's neighbors
-        if target in item:
-            print("Returned:", [item])
-            return [item]
-
-        # if the neighbor only has the same neighbors as source, erase them from the list
-        if sorted(list(neighbors_for_person(item[1]))) == source_neighbors:
-            source_neighbors.pop(item_index)
-        
-        # returns full path to target if they're a neighbor of one of the source's neighbors
-        elif target in list(neighbors_for_person(item[1])):
-            print("Returned:", list(item, (item[0], target)))
-            return list(item, (item[0], target))
-
-    
-    
-    final_connection = connection(source, target, source_neighbors_paths)
-    return final_connection
-    # TODO
-    raise NotImplementedError
 
 
 def connection(source, target, paths):
@@ -136,113 +114,37 @@ def connection(source, target, paths):
     - make sure to not add paths that lead to a person that's already in any of the existing paths!
     """
 
-
     paths_checked = set()
-    exists = False
-    path_index = -1
-    print("Paths:",paths)
+    #print("Paths:",paths)
 
     for path in paths:
+    
+        if target in path[-1]:
 
-        print("Checking path:", path, "\nChecking person:", path[-1][1])
+            #print("Returned:", path) #add a if neighborsforperson
+            return path
 
-        if target in path:
+        
+        #print("Checking path:", path, "\nChecking person:", path[-1][1])
 
-            print("Returned:", path) #add a if neighborsforperson
+        if target in path[-1]:
+
+            #print("Returned:", path) #add a if neighborsforperson
             return path
 
         for movie_person_tuple in list(neighbors_for_person(path[-1][1])):
 
-            for options in paths:
+            if not movie_person_tuple[1] in paths_checked:
 
-                if not movie_person_tuple[1] in options and not movie_person_tuple[1] in path:
+                paths_checked.add(movie_person_tuple[1])
+                temp_path = copy.deepcopy(path)
+                temp_path.append(movie_person_tuple)
+                paths.append(temp_path)
 
-                    paths.append([path,movie_person_tuple])
-                    #print("Added:",paths[-1])
+                #print("Added:",paths[-1])
 
-                else:
-                    print(movie_person_tuple[1], "in", paths)
-
-        paths.pop(0)
-
-        print("Result:", path)
-
-    # for path in paths:
-    #     if target in list(neighbors_for_person(path[-1][1])):
-    #         print("Returned:", path)
-    #         return path
-    #     else:
-    #         path_index += 1
-            
-    #     for next_step in list(neighbors_for_person(path[-1][1])):
-            
-    #         for options in paths:
-    #             if options != None:
-    #                 print("Options:", options)
-    #                 if next_step in options:
-    #                     exists = True
-
-    #         if not exists:
-    #             print("Next Step:", next_step)
-    #             option = path.append(next_step)
-
-    #             paths.append(option)
-
-    #         exists = False
-    # while sorted(paths_checked) != set(sorted(neighbors_for_person(source))):
-    #     for path in paths:
-    #         #print(path[-1][1])
-    #         #print("Paths checked:", paths_checked) # Debug
-    #         #print("Paths:", paths) # Debug
-    #         path_index += 1
-
-    #         for next_step in list(neighbors_for_person(path[-1][1])):
-    #             if not next_step in paths_checked:
-    #                 #print(next_step, "Not Checked")
-    #                 path += tuple(next_step)
-    #                 #print("Added:", next_step)
-    #                 paths_checked.add(next_step)
-    #         if target in path:
-    #             #print("Returned:", path)
-    #             return path
-        
-
-
-    print("Returned: None")
+    #print("Returned: None")
     return None
-    
-    # for path in current_paths:
-    #     print("Looking at", path)
-    #     path_index += 1
-
-    #     for next_step in list(neighbors_for_person(path[-1][1])):
-    #         for path_check in current_paths:
-    #             if next_step in path_check:
-    #                 exists = True
-
-    #         if not exists:
-    #             current_paths[path_index].append(next_step)
-    #             print("Added", next_step, "To", current_paths[path_index])
-    #         exists = False
-
-
-    # for target_check in current_paths:
-    #     if target in target_check:
-    #         print("Returned",target_check)
-    #         return list(target_check)
-        #[[(1,100),(2,200)],[(1,100),(3,300)]]
-        
-    # for neighbor, options in current_paths.items():
-    #     for item in options:
-    #         for next_option in list(neighbors_for_person(item[1])):
-    #             if not next_option in current_paths:
-    #                 for steps in source_neighbors.values():
-    #                     if next_option in steps:
-    #                         exists = True
-    #             if not exists:
-    #                 options.append(next_option)
-    #             exists = False
-    #         source_neighbors[neighbor] = options
     
 
 
