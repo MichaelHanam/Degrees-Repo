@@ -91,8 +91,12 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    source_neighbors_paths = []
     source_neighbors = list(neighbors_for_person(source))
     item_index = -1
+    for path in source_neighbors:
+        source_neighbors_paths.append([(path)])
+    return connection(source, target, source_neighbors_paths)
     for item in source_neighbors:
         
         # index which item number it is
@@ -112,12 +116,9 @@ def shortest_path(source, target):
             print("Returned:", list(item, (item[0], target)))
             return list(item, (item[0], target))
 
-    source_neighbors_paths = []
-    for path in source_neighbors:
-        source_neighbors_paths.append([(path)])
-
+    
+    
     final_connection = connection(source, target, source_neighbors_paths)
-    print(type(final_connection))
     return final_connection
     # TODO
     raise NotImplementedError
@@ -138,28 +139,73 @@ def connection(source, target, paths):
     paths_checked = set()
     exists = False
     path_index = -1
+    print("Paths:",paths)
 
+    for path in paths:
 
-    while sorted(paths_checked) != set(sorted(neighbors_for_person(source))):
-        for path in paths:
-            #print(path[-1][1])
-            #print("Paths checked:", paths_checked) # Debug
-            #print("Paths:", paths) # Debug
-            path_index += 1
+        #print("Checking path:", path, "\nChecking person:", path[-1][1])
 
-            for next_step in list(neighbors_for_person(path[-1][1])):
-                if not next_step in paths_checked:
-                    #print(next_step, "Not Checked")
-                    path += tuple(next_step)
-                    print("Added:", next_step)
-                    paths_checked.add(next_step)
-            if target in path:
-                print("Returned:", path)
-                return path
+        if target in path:
+
+            #print("Returned:", path)
+            return path
+
+        for movie_person_tuple in list(neighbors_for_person(path[-1][1])):
+
+            if not movie_person_tuple[1] in paths and not movie_person_tuple[1] in path:
+
+                paths.append([path,movie_person_tuple])
+                #print("Added:",paths[-1])
+
+            else:
+                print(movie_person_tuple[1], "in", paths)
+
+        paths.pop(0)
+
+        print(path)
+
+    # for path in paths:
+    #     if target in list(neighbors_for_person(path[-1][1])):
+    #         print("Returned:", path)
+    #         return path
+    #     else:
+    #         path_index += 1
+            
+    #     for next_step in list(neighbors_for_person(path[-1][1])):
+            
+    #         for options in paths:
+    #             if options != None:
+    #                 print("Options:", options)
+    #                 if next_step in options:
+    #                     exists = True
+
+    #         if not exists:
+    #             print("Next Step:", next_step)
+    #             option = path.append(next_step)
+
+    #             paths.append(option)
+
+    #         exists = False
+    # while sorted(paths_checked) != set(sorted(neighbors_for_person(source))):
+    #     for path in paths:
+    #         #print(path[-1][1])
+    #         #print("Paths checked:", paths_checked) # Debug
+    #         #print("Paths:", paths) # Debug
+    #         path_index += 1
+
+    #         for next_step in list(neighbors_for_person(path[-1][1])):
+    #             if not next_step in paths_checked:
+    #                 #print(next_step, "Not Checked")
+    #                 path += tuple(next_step)
+    #                 #print("Added:", next_step)
+    #                 paths_checked.add(next_step)
+    #         if target in path:
+    #             #print("Returned:", path)
+    #             return path
         
 
 
-    print("Returned None")
+    print("Returned: None")
     return None
     
     # for path in current_paths:
