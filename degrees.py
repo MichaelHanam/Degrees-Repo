@@ -59,7 +59,8 @@ def main():
 
     # Load data from files into memory
     print("Loading data...")
-    load_data(directory)
+    #load_data(directory)
+    load_data("small")
     print("Data loaded.")
 
     source = person_id_for_name(input("Name: "))
@@ -143,26 +144,28 @@ def connection(source, target, paths):
 
     for path in paths:
 
-        #print("Checking path:", path, "\nChecking person:", path[-1][1])
+        print("Checking path:", path, "\nChecking person:", path[-1][1])
 
         if target in path:
 
-            #print("Returned:", path)
+            print("Returned:", path) #add a if neighborsforperson
             return path
 
         for movie_person_tuple in list(neighbors_for_person(path[-1][1])):
 
-            if not movie_person_tuple[1] in paths and not movie_person_tuple[1] in path:
+            for options in paths:
 
-                paths.append([path,movie_person_tuple])
-                #print("Added:",paths[-1])
+                if not movie_person_tuple[1] in options and not movie_person_tuple[1] in path:
 
-            else:
-                print(movie_person_tuple[1], "in", paths)
+                    paths.append([path,movie_person_tuple])
+                    #print("Added:",paths[-1])
+
+                else:
+                    print(movie_person_tuple[1], "in", paths)
 
         paths.pop(0)
 
-        print(path)
+        print("Result:", path)
 
     # for path in paths:
     #     if target in list(neighbors_for_person(path[-1][1])):
