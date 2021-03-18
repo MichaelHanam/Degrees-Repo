@@ -94,7 +94,6 @@ def shortest_path(source, target):
     """
     source_neighbors_paths = []
     source_neighbors = list(neighbors_for_person(source))
-    item_index = -1
 
     for path in source_neighbors:
 
@@ -145,7 +144,6 @@ def connection(source, target, paths):
 
     #print("Returned: None")
     return None
-    
 
 
 def person_id_for_name(name):
@@ -185,6 +183,7 @@ def neighbors_for_person(person_id):
         for person_id in movies[movie_id]["stars"]:
             neighbors.add((movie_id, person_id))
     return neighbors
+
 
 if __name__ == "__main__":
     main()
